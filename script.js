@@ -112,61 +112,58 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // ===================================
-    // 4. FORM VALIDATION & SUBMISSION
-    // ===================================
+// 4. FORM VALIDATION & SUBMISSION (FORMSPREE)
+// ===================================
     const contactForm = document.getElementById('contactForm');
 
     if (contactForm) {
-        contactForm.addEventListener('submit', function(e) {
-            e.preventDefault(); // Prevent actual form submission
+        contactForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
 
-            // Get form values
-            const firstName = document.getElementById('first-name').value.trim();
-            const lastName = document.getElementById('last-name').value.trim();
-            const email = document.getElementById('email').value.trim();
-            const phone = document.getElementById('phone').value.trim();
-            const goals = document.getElementById('goals').value.trim();
+            // Get the submit button
+            const submitButton = contactForm.querySelector('.claim-button');
+            const originalButtonText = submitButton.textContent;
+            
+            // Show loading state
+            submitButton.textContent = 'SENDING...';
+            submitButton.disabled = true;
 
-            // Simple validation
-            if (!firstName || !lastName || !email || !phone || !goals) {
-                alert('Please fill in all required fields.');
-                return;
+            // Get form data
+            const formData = new FormData(contactForm);
+
+            try {
+                // Send to Formspree
+                const response = await fetch(contactForm.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    // Show success message
+                    const successMessage = document.getElementById('successMessage');
+                    successMessage.classList.add('show');
+                    
+                    // Reset form
+                    contactForm.reset();
+
+                    // Hide success message after 5 seconds
+                    setTimeout(() => {
+                        successMessage.classList.remove('show');
+                    }, 5000);
+                } else {
+                    throw new Error('Form submission failed');
+                }
+            } catch (error) {
+                alert('Oops! There was a problem submitting your form. Please try again or contact us directly.');
+                console.error('Form submission error:', error);
+            } finally {
+                // Reset button
+                submitButton.textContent = originalButtonText;
+                submitButton.disabled = false;
             }
-
-            // Email validation
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email)) {
-                alert('Please enter a valid email address.');
-                return;
-            }
-
-            // Phone validation (Nigerian format)
-            const phoneRegex = /^[0-9]{11}$/;
-            if (!phoneRegex.test(phone.replace(/[\s()-]/g, ''))) {
-                alert('Please enter a valid phone number (11 digits).');
-                return;
-            }
-
-            // If validation passes, show success message
-            const successMessage = document.getElementById('successMessage');
-            if (successMessage) {
-                successMessage.style.display = 'block';
-                contactForm.reset(); // Clear the form
-
-                // Hide success message after 5 seconds
-                setTimeout(function() {
-                    successMessage.style.display = 'none';
-                }, 5000);
-            }
-
-            // In a real application, you would send the data to a server here
-            console.log('Form Data:', {
-                firstName,
-                lastName,
-                email,
-                phone,
-                goals
-            });
         });
     }
 

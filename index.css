@@ -995,6 +995,45 @@ overflow: hidden;
 border: 2px solid var(--border);
 }
 /* -------------------------
+   FORM MESSAGES
+   ------------------------- */
+.form-message {
+    padding: 1rem;
+    border-radius: var(--radius-sm);
+    text-align: center;
+    margin-top: 1rem;
+    font-weight: 600;
+    display: none; /* Hidden by default */
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.success-message {
+    background-color: var(--accent);
+    color: var(--primary-text);
+    border: 2px solid var(--accent);
+}
+
+.error-message {
+    background-color: var(--destructive);
+    color: var(--text);
+    border: 2px solid var(--destructive);
+}
+
+.form-message.show {
+    display: block;
+}
+/* -------------------------
 FOOTER STYLES
 ------------------------- */
 footer {
